@@ -21,20 +21,28 @@ const StatisticList = ({stats}) => {
     const rating = {'good': 1, 'neutral': 0, 'bad': -1}
 
     const rateCount = stats.map(info => info.count).reduce((p, c) => p + c)
-    let average = stats.map(info => info.count * rating[info.name]).reduce((p, c) => p + c) / rateCount
-    average = ((average) ? average : 0)
-    let positiveRate = stats.filter(info => info.name === 'good').map(info => info.count) / rateCount
-    positiveRate = ((positiveRate) ? positiveRate : 0)
 
-    return (
-        <>
-            <h1>statistics</h1>
-            {stats.map(stat => <Statistic name={stat.name} count={stat.count}/>)}
-            <Statistic name={'all'} count={rateCount}/>
-            <Statistic name='average' count={average}/>
-            <Statistic name='positive' count={positiveRate * 100 + ' %'}/>
-        </>
-    )
+    if (rateCount) {
+        let average = stats.map(info => info.count * rating[info.name]).reduce((p, c) => p + c) / rateCount
+        let positiveRate = stats.filter(info => info.name === 'good').map(info => info.count) / rateCount
+
+        return (
+            <>
+                <h1>statistics</h1>
+                {stats.map(stat => <Statistic name={stat.name} count={stat.count}/>)}
+                <Statistic name={'all'} count={rateCount}/>
+                <Statistic name='average' count={average}/>
+                <Statistic name='positive' count={positiveRate * 100 + ' %'}/>
+            </>
+        )
+    } else {
+        return (
+            <>
+                <h1>statistics</h1>
+                <p>No feedback given</p>
+            </>
+        )
+    }
 }
 
 const App = () => {
