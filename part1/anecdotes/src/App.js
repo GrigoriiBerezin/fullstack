@@ -16,18 +16,27 @@ const App = () => {
         'The only way to go fast, is to go well.'
     ]
 
-    const randomElementFromArray = (array) => {
+    const randomIndexFromArray = (array) => {
         const diff = array.length - 1
         const rand = Math.random()
-        return array[Math.floor(rand * diff)]
+        return Math.floor(rand * diff)
     }
 
-    const [selected, setSelected] = useState(randomElementFromArray(anecdotes))
+    const [selected, setSelected] = useState(randomIndexFromArray(anecdotes))
+    const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+
+    const incVotes = () => {
+        // more immutable way
+        const newVotes = votes.map((element, index) => (index === selected) ? element + 1 : element)
+        setVotes(newVotes)
+    }
 
     return (
         <div>
-            <Row text={selected}/>
-            <Button name='next anecdote' action={() => setSelected(randomElementFromArray(anecdotes))}/>
+            <Row text={anecdotes[selected]}/>
+            <Row text={'has ' + votes[selected] + ' votes'}/>
+            <Button name={'vote'} action={() => incVotes()}/>
+            <Button name={'next anecdote'} action={() => setSelected(randomIndexFromArray(anecdotes))}/>
         </div>
     )
 }
