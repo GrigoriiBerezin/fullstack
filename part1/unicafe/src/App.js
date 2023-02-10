@@ -13,11 +13,25 @@ const ButtonBar = ({buttonsInfo}) => {
     )
 }
 
-const Statistic = ({name, count}) => {
-    return (<p>{name} {count}</p>)
+const StatisticRow = ({name, count}) => {
+    return (
+        <tr>
+            <td>{name}</td>
+            <td>{count}</td>
+        </tr>)
 }
 
-const StatisticList = ({stats}) => {
+const StatisticTable = ({stats}) => {
+    return (
+        <table>
+            <tbody>
+            {stats.map(info => <StatisticRow name={info.name} count={info.count}/>)}
+            </tbody>
+        </table>
+    )
+}
+
+const StatisticBar = ({stats}) => {
     const rating = {'good': 1, 'neutral': 0, 'bad': -1}
 
     const rateCount = stats.map(info => info.count).reduce((p, c) => p + c)
@@ -26,13 +40,14 @@ const StatisticList = ({stats}) => {
         let average = stats.map(info => info.count * rating[info.name]).reduce((p, c) => p + c) / rateCount
         let positiveRate = stats.filter(info => info.name === 'good').map(info => info.count) / rateCount
 
+        const newStats = stats.concat({name: 'all', count: rateCount})
+            .concat({name: 'average', count: average})
+            .concat({name: 'positive', count: positiveRate * 100 + ' %'})
+
         return (
             <>
                 <h1>statistics</h1>
-                {stats.map(stat => <Statistic name={stat.name} count={stat.count}/>)}
-                <Statistic name={'all'} count={rateCount}/>
-                <Statistic name='average' count={average}/>
-                <Statistic name='positive' count={positiveRate * 100 + ' %'}/>
+                <StatisticTable stats={newStats}/>
             </>
         )
     } else {
@@ -59,7 +74,7 @@ const App = () => {
     return (
         <div>
             <ButtonBar buttonsInfo={statStateList}/>
-            <StatisticList stats={statStateList}/>
+            <StatisticBar stats={statStateList}/>
         </div>
     )
 }
