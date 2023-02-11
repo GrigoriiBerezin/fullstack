@@ -1,64 +1,59 @@
 import {useState} from 'react'
-import Person from "./components/Person";
+import Persons from "./components/Persons";
+import PersonForm from "./components/PersonForm";
+import Filter from "./components/Filter";
 
 const App = () => {
-    const [persons, setPersons] = useState([
+    const personsState = useState([
         {name: 'Arto Hellas', number: '040-123456', id: 1},
         {name: 'Ada Lovelace', number: '39-44-5323523', id: 2},
         {name: 'Dan Abramov', number: '12-43-234345', id: 3},
         {name: 'Mary Poppendieck', number: '39-23-6423122', id: 4}
-    ])
+    ]);
+    const [persons, setPersons] = personsState
 
-    const [searchedPersons, setSearchedPersons] = useState(persons)
+    const searchedPersonsState = useState(persons);
+    const [searchedPersons, setSearchedPersons] = searchedPersonsState
 
     const defaultName = ''
-    const [newName, setNewName] = useState(defaultName)
+    const newNameState = useState(defaultName);
+    const [newName, setNewName] = newNameState
 
     const defaultNumber = ''
-    const [number, setNumber] = useState(defaultNumber)
+    const numberState = useState(defaultNumber);
+    const [number, setNumber] = numberState
 
     const defaultSearchMask = ''
-    const [searchMask, setSearchMask] = useState(defaultSearchMask)
+    const searchMaskState = useState(defaultSearchMask);
+    const [, setSearchMask] = searchMaskState
+
+    const formProperties = [
+        {id: 1, name: 'name', state: newNameState},
+        {id: 2, name: 'number', state: numberState}
+    ]
 
     const addPerson = (event) => {
         event.preventDefault()
         if (persons.find(p => p.name === newName)) {
             alert(`${newName} is already added to phonebook`)
         } else {
-            setPersons(persons.concat({id: persons.length + 1, name: newName, number: number}))
+            const newPersons = persons.concat({id: persons.length + 1, name: newName, number: number});
+            setPersons(newPersons)
+            setSearchedPersons(newPersons)
+            setSearchMask(defaultSearchMask)
             setNewName(defaultName)
             setNumber(defaultNumber)
         }
     }
 
-    const onChangeEvent = (event) => ((setState) => setState(event.target.value))
-    const searchByMask = (event) => {
-        const mask = event.target.value.toLowerCase();
-        setSearchMask(mask)
-        setSearchedPersons(persons.filter(p => p.name.toLowerCase().includes(mask)))
-    }
-
     return (
         <div>
             <h2>Phonebook</h2>
-            <form onSubmit={addPerson}>
-                <div>
-                    filter shown with: <input value={searchMask} onChange={searchByMask}/>
-                </div>
-                <div>
-                    name: <input value={newName} onChange={e => onChangeEvent(e)(setNewName)}/>
-                </div>
-                <div>
-                    number: <input value={number} onChange={e => onChangeEvent(e)(setNumber)}/>
-                </div>
-                <div>
-                    <button type="submit">add</button>
-                </div>
-            </form>
+            <Filter searchList={persons} searchState={searchMaskState} resultState={searchedPersonsState}/>
+            <h3>Add a new</h3>
+            <PersonForm properties={formProperties} onSubmit={addPerson}/>
             <h2>Numbers</h2>
-            <div>
-                {searchedPersons.map(person => <Person key={person.id} name={person.name} number={person.number}/>)}
-            </div>
+            <Persons persons={searchedPersons}/>
         </div>
     )
 }
