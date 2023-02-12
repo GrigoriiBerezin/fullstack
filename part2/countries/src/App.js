@@ -5,7 +5,7 @@ import CountryInfo from "./components/CountryInfo"
 
 function App() {
     const searchState = useState('')
-    const [search,] = searchState
+    const [search, setSearch] = searchState
     const [countryArray, setCountryArray] = useState([])
 
     useEffect(() => {
@@ -14,10 +14,12 @@ function App() {
             .catch(() => setCountryArray([]))
     }, [search])
 
+    const onShow = (name) => (setSearch(name))
+
     return (
         <div>
             <SearchBar searchState={searchState}/>
-            <CountryInfo countries={countryArray}/>
+            <CountryInfo countries={countryArray} onShow={onShow}/>
         </div>
     )
 }

@@ -1,8 +1,8 @@
-const CountryInfo = ({countries}) => {
+const CountryInfo = ({countries, onShow}) => {
     if (countries.length > 10) {
         return (<div><p>Too many matches, specify another filter</p></div>)
     } else if (countries.length > 1) {
-        return (<div>{countries.map(c => <p>{c.name.common}</p>)}</div>)
+        return (countries.map(c => <p>{c.name.common}<button onClick={() => onShow(c.name.common)}>show</button></p>))
     } else if (countries.length === 1) {
         const country = countries[0]
         return (
