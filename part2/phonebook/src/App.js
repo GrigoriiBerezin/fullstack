@@ -24,13 +24,17 @@ const App = () => {
 
     const addPerson = (event) => {
         event.preventDefault()
-        if (persons.find(p => p.name === info.name)) {
-            alert(`${info.name} is already added to phonebook`)
+        const personIndex = persons.findIndex(p => p.name === info.name) + 1;
+        if (personIndex !== 0) {
+            if (window.confirm(`${info.name} is already added to phonebook, replace the old number with a new one?`)) {
+                personsService.update(personIndex, {...info})
+                    .then(updatedPerson => setPersons(persons.map(p => updatedPerson.id === p.id ? updatedPerson : p)))
+            }
         } else {
-            const newPerson = {...info};
-            personsService.create(newPerson).then(person => setPersons(persons.concat(person)))
-            setInfo(defaultInfo)
+            const newPerson = {...info}
+            personsService.create(newPerson).then(p => setPersons(persons.concat(p)))
         }
+        setInfo(defaultInfo)
     }
 
     return (
