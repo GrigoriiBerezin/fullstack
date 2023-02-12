@@ -1,13 +1,11 @@
 import PropertyInput from "./PropertyInput";
 
-const Filter = ({searchList, searchState, resultState}) => {
+const Filter = ({searchState}) => {
     const [searchMask, setSearchMask] = searchState
-    const [, setResult] = resultState
 
     const searchByMask = (event) => {
         const mask = event.target.value.toLowerCase();
         setSearchMask(mask)
-        setResult(searchList.filter(p => p.name.toLowerCase().includes(mask)))
     }
 
     return (

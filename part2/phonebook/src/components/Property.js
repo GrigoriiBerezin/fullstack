@@ -1,10 +1,5 @@
 import PropertyInput from "./PropertyInput";
 
-const Property = ({name, state}) => {
-    const [value, setValue] = state
-    const onChangeEvent = (event) => ((setState) => setState(event.target.value))
-
-    return (<div>{name} <PropertyInput value={value} func={e => onChangeEvent(e)(setValue)}/></div>)
-}
+const Property = ({name, value, func}) => (<div>{name} <PropertyInput value={value} func={func}/></div>)
 
 export default Property

@@ -12,46 +12,33 @@ const App = () => {
     ]);
     const [persons, setPersons] = personsState
 
-    const searchedPersonsState = useState(persons);
-    const [searchedPersons, setSearchedPersons] = searchedPersonsState
-
-    const defaultName = ''
-    const newNameState = useState(defaultName);
-    const [newName, setNewName] = newNameState
-
-    const defaultNumber = ''
-    const numberState = useState(defaultNumber);
-    const [number, setNumber] = numberState
+    const defaultInfo = {'name': '', 'number': ''}
+    const infoState = useState(defaultInfo);
+    const [info, setInfo] = infoState // makes it easier to add more props
 
     const defaultSearchMask = ''
     const searchMaskState = useState(defaultSearchMask);
-    const [, setSearchMask] = searchMaskState
+    const [searchMask,] = searchMaskState
 
-    const formProperties = [
-        {id: 1, name: 'name', state: newNameState},
-        {id: 2, name: 'number', state: numberState}
-    ]
+    const searchedPersons = persons.filter(p => p.name.toLowerCase().includes(searchMask))
 
     const addPerson = (event) => {
         event.preventDefault()
-        if (persons.find(p => p.name === newName)) {
-            alert(`${newName} is already added to phonebook`)
+        if (persons.find(p => p.name === info.name)) {
+            alert(`${info.name} is already added to phonebook`)
         } else {
-            const newPersons = persons.concat({id: persons.length + 1, name: newName, number: number});
+            const newPersons = persons.concat({...info, id: persons.length + 1});
             setPersons(newPersons)
-            setSearchedPersons(newPersons)
-            setSearchMask(defaultSearchMask)
-            setNewName(defaultName)
-            setNumber(defaultNumber)
+            setInfo(defaultInfo)
         }
     }
 
     return (
         <div>
             <h2>Phonebook</h2>
-            <Filter searchList={persons} searchState={searchMaskState} resultState={searchedPersonsState}/>
+            <Filter searchState={searchMaskState}/>
             <h3>Add a new</h3>
-            <PersonForm properties={formProperties} onSubmit={addPerson}/>
+            <PersonForm properties={infoState} onSubmit={addPerson}/>
             <h2>Numbers</h2>
             <Persons persons={searchedPersons}/>
         </div>
