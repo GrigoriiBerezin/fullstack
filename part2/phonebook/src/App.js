@@ -1,16 +1,16 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import Persons from "./components/Persons";
 import PersonForm from "./components/PersonForm";
 import Filter from "./components/Filter";
+import personsService from './services/persons'
 
 const App = () => {
-    const personsState = useState([
-        {name: 'Arto Hellas', number: '040-123456', id: 1},
-        {name: 'Ada Lovelace', number: '39-44-5323523', id: 2},
-        {name: 'Dan Abramov', number: '12-43-234345', id: 3},
-        {name: 'Mary Poppendieck', number: '39-23-6423122', id: 4}
-    ]);
+    const personsState = useState([]);
     const [persons, setPersons] = personsState
+
+    useEffect(() => {
+        personsService.getAll().then(data => setPersons(data))
+    }, [])
 
     const defaultInfo = {'name': '', 'number': ''}
     const infoState = useState(defaultInfo);
@@ -27,8 +27,8 @@ const App = () => {
         if (persons.find(p => p.name === info.name)) {
             alert(`${info.name} is already added to phonebook`)
         } else {
-            const newPersons = persons.concat({...info, id: persons.length + 1});
-            setPersons(newPersons)
+            const newPerson = {...info};
+            personsService.create(newPerson).then(person => setPersons(persons.concat(person)))
             setInfo(defaultInfo)
         }
     }
