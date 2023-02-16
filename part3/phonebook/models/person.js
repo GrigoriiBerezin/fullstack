@@ -6,8 +6,16 @@ mongo.set('strictQuery', false)
 mongo.connect(url)
 
 const schema = new mongo.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minLength: 3,
+        required: true
+    },
+    number: {
+        type: String,
+        minLength: 1,
+        required: true
+    },
     date: {type: Date, default: Date.now}
 })
 
