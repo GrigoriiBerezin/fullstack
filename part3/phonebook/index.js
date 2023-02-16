@@ -11,38 +11,33 @@ app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-app.get('/api/persons', (request, response) => {
-    Person.find({}).then(people => response.json(people))
+app.get('/api/persons', (request, response, next) => {
+    Person.find({}).then(people => response.json(people)).catch(error => next(error))
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    Person.findById(request.params.id).then(person => response.json(person))
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id).then(person => response.json(person)).catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    Person.findByIdAndDelete(request.params.id).then(() => response.status(204).end())
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndDelete(request.params.id).then(() => response.status(204).end()).catch(error => next(error))
 })
 
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
     const body = request.body
 
-    if (!body.name || !body.number) {
-        return response.status(400).json({error: 'Content missing'})
-    }
-
-    Person.findByIdAndUpdate(request.params.id, {
+    const note = {
         name: body.name,
         number: body.number,
         date: Date.now()
-    }, {new: true}).then(updatedPerson => response.json(updatedPerson))
+    };
+    Person.findByIdAndUpdate(request.params.id, note, {new: true})
+        .then(updatedPerson => response.json(updatedPerson))
+        .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
-
-    if (!body.name || !body.number) {
-        return response.status(400).json({error: 'Content missing'})
-    }
 
     Person.findOne({name: body.name}).then(isExist => {
         if (isExist) {
@@ -55,7 +50,7 @@ app.post('/api/persons', (request, response) => {
         })
 
         person.save().then(savedPerson => response.json(savedPerson))
-    })
+    }).catch(error => next(error))
 })
 
 app.get('/info', (request, response) => {
