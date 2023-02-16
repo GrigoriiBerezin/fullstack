@@ -26,6 +26,10 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.put('/api/persons/:id', (request, response, next) => {
     const body = request.body
 
+    if (!body.name || !body.number) {
+        return response.status(400).json({error: 'Content missing'})
+    }
+
     const note = {
         name: body.name,
         number: body.number,
@@ -38,6 +42,10 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
+
+    if (!body.name || !body.number) {
+        return response.status(400).json({error: 'Content missing'})
+    }
 
     Person.findOne({name: body.name}).then(isExist => {
         if (isExist) {
@@ -61,6 +69,24 @@ app.get('/info', (request, response) => {
         response.send(header + date)
     })
 })
+
+const errorHandler = (error, request, response, next) => {
+    console.log(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({error: 'malformatted id'})
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({error: 'unknown endpoint'})
+}
+
+app.use(unknownEndpoint)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
