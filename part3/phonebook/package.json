@@ -9,11 +9,13 @@
     "build:ui": "rm -rf build && cd ../../part2/phonebook && npm run build && cp -r build ../../part3/phonebook",
     "dev:full": "npm run build:ui && npm run dev",
     "deploy": "fly deploy",
-    "deploy:full": "npm run build:ui && npm run deploy"
+    "deploy:full": "npm run build:ui && npm run deploy",
+    "lint": "eslint ."
   },
   "author": "Grigorii Berezin",
   "license": "MIT",
   "devDependencies": {
+    "eslint": "^8.34.0",
     "nodemon": "^2.0.20"
   },
   "dependencies": {
