@@ -30,36 +30,36 @@ const App = () => {
 
     const addPerson = (event) => {
         event.preventDefault()
-        const personIndex = persons.findIndex(p => p.name === info.name) + 1;
-        if (personIndex !== 0) {
+        const person = persons.find(p => p.name === info.name);
+        if (person) {
             if (window.confirm(`${info.name} is already added to phonebook, replace the old number with a new one?`)) {
-                personsService.update(personIndex, {...info})
+                personsService.update(person.id, {...info})
                     .then(updatedPerson => setPersons(persons.map(p => updatedPerson.id === p.id ? updatedPerson : p)))
                 setInfoMessage({type: 'notification', msg: `Updated ${info.name}`})
-                removeMessage(5000)
             }
         } else {
             const newPerson = {...info}
             personsService.create(newPerson).then(p => setPersons(persons.concat(p)))
             setInfoMessage({type: 'notification', msg: `Added ${info.name}`})
-            removeMessage(5000)
         }
+        removeMessage(5000)
         setInfo(defaultInfo)
     }
 
     const onDelete = (person) => window.confirm(`Delete ${person.name}?`) ?
         personsService._delete(person.id)
             .then(() => personsService.getAll().then(data => {
-                console.log(data)
                 setPersons(data)
+                setInfoMessage({type: 'notification', msg: `${person.name} is deleted successfully`})
             }))
             .catch(() => {
-            setInfoMessage({
-                type: 'error',
-                msg: `Information of ${person.name} has already been removed from the server`
-            })
+                setInfoMessage({
+                    type: 'error',
+                    msg: `Information of ${person.name} has already been removed from the server`
+                })
+                setPersons(persons.filter(p => p.id !== person.id))
+            }).finally(() => {
             removeMessage(5000)
-            setPersons(persons.filter(p => p.id !== person.id))
         }) : null
 
     return (
