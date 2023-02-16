@@ -13,7 +13,10 @@ const schema = new mongo.Schema({
     },
     number: {
         type: String,
-        minLength: 1,
+        minLength: 8,
+        validate: {
+            validator: (value) => /\d{2,3}-\d+/.test(value)
+        },
         required: true
     },
     date: {type: Date, default: Date.now}
