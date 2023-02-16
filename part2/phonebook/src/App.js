@@ -26,7 +26,10 @@ const App = () => {
 
     const searchedPersons = persons.filter(p => p.name.toLowerCase().includes(searchMask))
 
-    const removeMessage = (duration) => setTimeout(() => setInfoMessage(defaultInfoMessage), duration)
+    const setMessage = (message) => {
+        setInfoMessage(message)
+        setTimeout(() => setInfoMessage(defaultInfoMessage), 5000)
+    }
 
     const addPerson = (event) => {
         event.preventDefault()
@@ -34,15 +37,19 @@ const App = () => {
         if (person) {
             if (window.confirm(`${info.name} is already added to phonebook, replace the old number with a new one?`)) {
                 personsService.update(person.id, {...info})
-                    .then(updatedPerson => setPersons(persons.map(p => updatedPerson.id === p.id ? updatedPerson : p)))
-                setInfoMessage({type: 'notification', msg: `Updated ${info.name}`})
+                    .then(updatedPerson => {
+                        setPersons(persons.map(p => updatedPerson.id === p.id ? updatedPerson : p))
+                        setMessage({type: 'notification', msg: `Updated ${info.name}`})
+                    }).catch(error => setMessage({type: 'error', msg: error.response.data.error}))
             }
         } else {
             const newPerson = {...info}
-            personsService.create(newPerson).then(p => setPersons(persons.concat(p)))
-            setInfoMessage({type: 'notification', msg: `Added ${info.name}`})
+            personsService.create(newPerson).then(p => {
+                setPersons(persons.concat(p))
+                setMessage({type: 'notification', msg: `Added ${info.name}`})
+            })
+                .catch(error => setMessage({type: 'error', msg: error.response.data.error}))
         }
-        removeMessage(5000)
         setInfo(defaultInfo)
     }
 
@@ -50,17 +57,12 @@ const App = () => {
         personsService._delete(person.id)
             .then(() => personsService.getAll().then(data => {
                 setPersons(data)
-                setInfoMessage({type: 'notification', msg: `${person.name} is deleted successfully`})
+                setMessage({type: 'notification', msg: `${person.name} is deleted successfully`})
             }))
-            .catch(() => {
-                setInfoMessage({
-                    type: 'error',
-                    msg: `Information of ${person.name} has already been removed from the server`
-                })
+            .catch(error => {
+                setMessage({type: 'error', msg: error.response.data.error})
                 setPersons(persons.filter(p => p.id !== person.id))
-            }).finally(() => {
-            removeMessage(5000)
-        }) : null
+            }) : null
 
     return (
         <div>
