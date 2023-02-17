@@ -48,7 +48,7 @@ describe('create blog', () => {
     title: 'New blog title',
     author: 'Tester',
     url: 'https://google.com',
-    likes: 0
+    likes: 5
   }
 
   test('increase amount of blogs', async () => {
@@ -64,12 +64,24 @@ describe('create blog', () => {
   test('return id of created blog', async () => {
     const newId = await api.post('/api/blogs').send(newBlog)
 
-    const allBlogs = await helper.blogsInDb()
-    const createdBlog = allBlogs.find(b => b.id === newId.body.id)
-
+    const theLastBlog = await helper.theLastBlog()
     const expected = { ...newBlog, id: newId.body.id }
 
-    expect(createdBlog).toEqual(expected)
+    expect(theLastBlog).toEqual(expected)
+  })
+
+  test('insert likes to zero if likes field is missing', async () => {
+    const blogWithNoLikes = {
+      title: 'New blog title',
+      author: 'Tester',
+      url: 'https://google.com'
+    }
+
+    await api.post('/api/blogs').send(blogWithNoLikes)
+
+    const theLastBlog = await helper.theLastBlog()
+
+    expect(theLastBlog.likes).toBe(0)
   })
 })
 

@@ -56,4 +56,11 @@ const blogsInDb = async () => {
   return blogs.map(blog => blog.toJSON())
 }
 
-module.exports = { blogs, blogsInDb }
+const theLastBlog = async () => {
+  const blogs = await Blog.find()
+    .sort({ _id: -1 })
+    .limit(1)
+  return blogs.map(b => b.toJSON())[0]
+}
+
+module.exports = { blogs, blogsInDb, theLastBlog }
