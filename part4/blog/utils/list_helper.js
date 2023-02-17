@@ -2,14 +2,11 @@ const _ = require('lodash')
 
 const dummy = (blogs) => 1
 
-const totalLikes = (blogs) => blogs.length === 0 ? 0 : blogs.map(b => b.likes).reduce((s, l) => s + l)
+const totalLikes = (blogs) => _.reduce(blogs, (acc, b) => acc + b.likes, 0)
 
 const favoriteBlog = (blogs) => {
-  if (blogs.length === 0) {
-    return {}
-  } else {
-    return blogs.reduce((fav, cur) => (cur.likes > fav.likes) ? cur : fav)
-  }
+  const result = _.maxBy(blogs, 'likes')
+  return result ? result : {}
 }
 
 const mostBlogs = (blogs) => {
