@@ -1,6 +1,6 @@
 const Blog = require('../models/blog')
 
-const blogs = [
+const initBlogs = [
   {
     _id: '5a422a851b54a676234d17f7',
     title: 'React patterns',
@@ -63,4 +63,4 @@ const theLastBlog = async () => {
   return blogs.map(b => b.toJSON())[0]
 }
 
-module.exports = { blogs, blogsInDb, theLastBlog }
+module.exports = { initBlogs, blogsInDb, theLastBlog }

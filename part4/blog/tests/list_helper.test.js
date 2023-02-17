@@ -17,7 +17,7 @@ describe('total likes', () => {
   })
 
   test('return sum of likes from all blogs', () => {
-    const result = listHelper.totalLikes(helper.blogs)
+    const result = listHelper.totalLikes(helper.initBlogs)
     expect(result).toBe(36)
   })
 })
@@ -29,12 +29,12 @@ describe('favorite blog', () => {
   })
 
   test('return the most liked blog', () => {
-    const result = listHelper.favoriteBlog(helper.blogs)
-    expect(result).toEqual(helper.blogs[2])
+    const result = listHelper.favoriteBlog(helper.initBlogs)
+    expect(result).toEqual(helper.initBlogs[2])
   })
 
   test('return first most liked blog if few exist', () => {
-    const equalBlogs = helper.blogs.map(b => {
+    const equalBlogs = helper.initBlogs.map(b => {
       return { ...b, likes: 5 }
     })
 
@@ -45,7 +45,7 @@ describe('favorite blog', () => {
 
 describe('most blogs', () => {
   test('find the most productive blogger', () => {
-    const result = listHelper.mostBlogs(helper.blogs)
+    const result = listHelper.mostBlogs(helper.initBlogs)
     const expected = {
       author: 'Robert C. Martin',
       blogs: 3
@@ -63,7 +63,7 @@ describe('most blogs', () => {
 
 describe('most likes', () => {
   test('find the most liked author', () => {
-    const result = listHelper.mostLikes(helper.blogs)
+    const result = listHelper.mostLikes(helper.initBlogs)
     const expected = {
       author: 'Edsger W. Dijkstra',
       likes: 17

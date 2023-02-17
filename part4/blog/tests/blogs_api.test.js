@@ -8,9 +8,7 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  for (const blog of helper.blogs) {
-    await (new Blog(blog)).save()
-  }
+  await Blog.insertMany(helper.initBlogs)
 })
 
 describe('get all blogs', () => {
@@ -23,7 +21,7 @@ describe('get all blogs', () => {
   test('return exact amount of blogs', async () => {
     const blogs = await api.get('/api/blogs')
 
-    expect(blogs.body.length).toBe(helper.blogs.length)
+    expect(blogs.body.length).toBe(helper.initBlogs.length)
   })
 
   test('the first blog is within returned blogs', async () => {
@@ -58,7 +56,7 @@ describe('create blog', () => {
 
     const updatedBlogs = await helper.blogsInDb()
 
-    expect(updatedBlogs.length).toBe(helper.blogs.length + 1)
+    expect(updatedBlogs.length).toBe(helper.initBlogs.length + 1)
   })
 
   test('return id of created blog', async () => {
@@ -118,6 +116,42 @@ describe('create blog', () => {
     const allBlogsAfter = await helper.blogsInDb()
 
     expect(allBlogsBefore.length).toBe(allBlogsAfter.length)
+  })
+})
+
+describe('delete blog', () => {
+  test('delete blog by valid id', async () => {
+    const id = (await helper.blogsInDb())[0].id
+
+    await api.delete(`/api/blogs/${id}`)
+      .expect(204)
+
+    const allBlogs = await helper.blogsInDb()
+    const deletedBlog = allBlogs.find(b => b.id === id)
+
+    expect(deletedBlog).toBeUndefined()
+  })
+})
+
+describe('update blog', () => {
+  test('update blog by existed id', async () => {
+    const id = (await helper.blogsInDb())[0].id
+
+    const updatedNote = {
+      title: 'Updated title',
+      author: 'Tester',
+      url: 'some url',
+      likes: 3
+    }
+
+    await api.put(`/api/blogs/${id}`)
+      .send(updatedNote)
+      .expect(200)
+
+    const allBlogs = await helper.blogsInDb()
+    const updatedBlog = allBlogs.find(b => b.id === id)
+
+    expect(updatedBlog).toEqual({ ...updatedNote, id: id })
   })
 })
 
