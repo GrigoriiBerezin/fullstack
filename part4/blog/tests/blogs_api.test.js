@@ -33,6 +33,14 @@ describe('get all blogs', () => {
 
     expect(contents).toContain('TDD harms architecture')
   })
+
+  test('blog contains id instead of _id field', async () => {
+    const blogs = await api.get('/api/blogs')
+
+    const content = blogs.body[0]
+
+    expect(content.id).toBeDefined()
+  })
 })
 
 afterAll(async () => await mongoose.connection.close())
