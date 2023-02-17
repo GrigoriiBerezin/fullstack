@@ -83,6 +83,42 @@ describe('create blog', () => {
 
     expect(theLastBlog.likes).toBe(0)
   })
+
+  test('return Bad Request if title is missing', async () => {
+    const blogWithNoTitle = {
+      author: 'Tester',
+      url: 'https://google.com',
+      like: 5
+    }
+
+    const allBlogsBefore = await helper.blogsInDb()
+
+    await api.post('/api/blogs')
+      .send(blogWithNoTitle)
+      .expect(400)
+
+    const allBlogsAfter = await helper.blogsInDb()
+
+    expect(allBlogsBefore.length).toBe(allBlogsAfter.length)
+  })
+
+  test('return Bad Request if url is missing', async () => {
+    const blogWithNoUrl = {
+      title: 'New blog title',
+      author: 'Tester',
+      like: 5
+    }
+
+    const allBlogsBefore = await helper.blogsInDb()
+
+    await api.post('/api/blogs')
+      .send(blogWithNoUrl)
+      .expect(400)
+
+    const allBlogsAfter = await helper.blogsInDb()
+
+    expect(allBlogsBefore.length).toBe(allBlogsAfter.length)
+  })
 })
 
 afterAll(async () => await mongoose.connection.close())
