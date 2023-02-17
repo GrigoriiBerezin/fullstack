@@ -43,4 +43,34 @@ describe('get all blogs', () => {
   })
 })
 
+describe('create blog', () => {
+  const newBlog = {
+    title: 'New blog title',
+    author: 'Tester',
+    url: 'https://google.com',
+    likes: 0
+  }
+
+  test('increase amount of blogs', async () => {
+    await api.post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+
+    const updatedBlogs = await helper.blogsInDb()
+
+    expect(updatedBlogs.length).toBe(helper.blogs.length + 1)
+  })
+
+  test('return id of created blog', async () => {
+    const newId = await api.post('/api/blogs').send(newBlog)
+
+    const allBlogs = await helper.blogsInDb()
+    const createdBlog = allBlogs.find(b => b.id === newId.body.id)
+
+    const expected = { ...newBlog, id: newId.body.id }
+
+    expect(createdBlog).toEqual(expected)
+  })
+})
+
 afterAll(async () => await mongoose.connection.close())
