@@ -9,19 +9,21 @@ const User = require('../models/user')
 
 const api = supertest(app)
 
-let token = ''
+let token
+let userId
 
 beforeAll(async () => {
   const user = helper.initUser
 
   await User.deleteMany({})
   const newUser = await (new User(user)).save()
+  userId = newUser._id
   token = 'Bearer ' + await jwt.sign({ username: newUser.username, id: newUser._id }, config.SECRET)
 })
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  await Blog.insertMany(helper.initBlogs)
+  await Blog.insertMany(helper.initBlogs.map(b => ({ ...b, user: userId })))
 })
 
 describe('get all blogs', () => {
@@ -147,12 +149,28 @@ describe('delete blog', () => {
     const id = (await helper.blogsInDb())[0].id
 
     await api.delete(`/api/blogs/${id}`)
+      .set('Authorization', token)
       .expect(204)
 
     const allBlogs = await helper.blogsInDb()
     const deletedBlog = allBlogs.find(b => b.id === id)
 
     expect(deletedBlog).toBeUndefined()
+  })
+
+  test('return 401 status code when try to delete not your own blog', async () => {
+    const blogId = (await helper.blogsInDb())[0].id
+    const nonExistedId = await helper.nonExistedId()
+    const newToken = 'Bearer ' + await jwt.sign({ id: nonExistedId }, config.SECRET)
+
+    const response = await api.delete(`/api/blogs/${blogId}`)
+      .set('Authorization', newToken)
+      .expect(401)
+
+    const blogs = await helper.blogsInDb()
+
+    expect(response.body.error).toBe('cannot delete not your own blog')
+    expect(blogs.length).toBe(helper.initBlogs.length)
   })
 })
 
