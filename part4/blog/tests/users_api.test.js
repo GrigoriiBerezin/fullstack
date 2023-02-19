@@ -111,6 +111,20 @@ describe('create user', () => {
   })
 })
 
+describe('get all users', () => {
+  test('return 200 status code and response in json', async () => {
+    await api.get('/api/users')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('includes all stored users', async () => {
+    const users = await api.get('/api/users')
+
+    expect(users.body.length).toBe(1)
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
