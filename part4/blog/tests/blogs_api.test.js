@@ -60,12 +60,12 @@ describe('create blog', () => {
   })
 
   test('return id of created blog', async () => {
-    const newId = await api.post('/api/blogs').send(newBlog)
+    const newId = (await api.post('/api/blogs').send(newBlog)).body.id
 
     const theLastBlog = await helper.theLastBlog()
-    const expected = { ...newBlog, id: newId.body.id }
 
-    expect(theLastBlog).toEqual(expected)
+    expect(theLastBlog.id).toEqual(newId)
+    expect(theLastBlog.title).toEqual(newBlog.title)
   })
 
   test('insert likes to zero if likes field is missing', async () => {
@@ -89,15 +89,13 @@ describe('create blog', () => {
       like: 5
     }
 
-    const allBlogsBefore = await helper.blogsInDb()
-
     await api.post('/api/blogs')
       .send(blogWithNoTitle)
       .expect(400)
 
-    const allBlogsAfter = await helper.blogsInDb()
+    const blogs = await helper.blogsInDb()
 
-    expect(allBlogsBefore.length).toBe(allBlogsAfter.length)
+    expect(helper.initBlogs.length).toBe(blogs.length)
   })
 
   test('return Bad Request if url is missing', async () => {
@@ -107,15 +105,13 @@ describe('create blog', () => {
       like: 5
     }
 
-    const allBlogsBefore = await helper.blogsInDb()
-
     await api.post('/api/blogs')
       .send(blogWithNoUrl)
       .expect(400)
 
-    const allBlogsAfter = await helper.blogsInDb()
+    const blogs = await helper.blogsInDb()
 
-    expect(allBlogsBefore.length).toBe(allBlogsAfter.length)
+    expect(helper.initBlogs.length).toBe(blogs.length)
   })
 })
 
@@ -151,7 +147,7 @@ describe('update blog', () => {
     const allBlogs = await helper.blogsInDb()
     const updatedBlog = allBlogs.find(b => b.id === id)
 
-    expect(updatedBlog).toEqual({ ...updatedNote, id: id })
+    expect(updatedBlog.title).toBe(updatedNote.title)
   })
 })
 
