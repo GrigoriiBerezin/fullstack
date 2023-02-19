@@ -1,10 +1,23 @@
 const mongoose = require('mongoose')
 const helper = require('./test_helper')
+const config = require('../utils/config')
 const app = require('../app')
 const supertest = require('supertest')
+const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
+
+let token = ''
+
+beforeAll(async () => {
+  const user = helper.initUser
+
+  await User.deleteMany({})
+  const newUser = await (new User(user)).save()
+  token = 'Bearer ' + await jwt.sign({ username: newUser.username, id: newUser._id }, config.SECRET)
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -52,6 +65,7 @@ describe('create blog', () => {
   test('increase amount of blogs', async () => {
     await api.post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', token)
       .expect(201)
 
     const updatedBlogs = await helper.blogsInDb()
@@ -60,12 +74,12 @@ describe('create blog', () => {
   })
 
   test('return id of created blog', async () => {
-    const newId = (await api.post('/api/blogs').send(newBlog)).body.id
+    const newId = (await api.post('/api/blogs').set('Authorization', token).send(newBlog)).body.id
 
     const theLastBlog = await helper.theLastBlog()
 
-    expect(theLastBlog.id).toEqual(newId)
-    expect(theLastBlog.title).toEqual(newBlog.title)
+    expect(theLastBlog.id).toBe(newId)
+    expect(theLastBlog.title).toBe(newBlog.title)
   })
 
   test('insert likes to zero if likes field is missing', async () => {
@@ -75,7 +89,7 @@ describe('create blog', () => {
       url: 'https://google.com'
     }
 
-    await api.post('/api/blogs').send(blogWithNoLikes)
+    await api.post('/api/blogs').set('Authorization', token).send(blogWithNoLikes)
 
     const theLastBlog = await helper.theLastBlog()
 
@@ -91,6 +105,7 @@ describe('create blog', () => {
 
     await api.post('/api/blogs')
       .send(blogWithNoTitle)
+      .set('Authorization', token)
       .expect(400)
 
     const blogs = await helper.blogsInDb()
@@ -107,10 +122,22 @@ describe('create blog', () => {
 
     await api.post('/api/blogs')
       .send(blogWithNoUrl)
+      .set('Authorization', token)
       .expect(400)
 
     const blogs = await helper.blogsInDb()
 
+    expect(helper.initBlogs.length).toBe(blogs.length)
+  })
+
+  test('return 400 status code with invalid token message when token message is invalid', async () => {
+    const error = await api.post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+    const blogs = await helper.blogsInDb()
+
+    expect(error.body.error).toBe('token invalid')
     expect(helper.initBlogs.length).toBe(blogs.length)
   })
 })
