@@ -130,14 +130,14 @@ describe('create blog', () => {
     expect(helper.initBlogs.length).toBe(blogs.length)
   })
 
-  test('return 400 status code with invalid token message when token message is invalid', async () => {
+  test('return 401 status code with invalid token message when token message is invalid', async () => {
     const error = await api.post('/api/blogs')
       .send(newBlog)
-      .expect(400)
+      .expect(401)
 
     const blogs = await helper.blogsInDb()
 
-    expect(error.body.error).toBe('token invalid')
+    expect(error.body.error).toBe('jwt must be provided')
     expect(helper.initBlogs.length).toBe(blogs.length)
   })
 })
