@@ -88,6 +88,18 @@ describe('create user', () => {
     expect(users.length).toBe(1)
   })
 
+  test('return 400 status code when password is less than 3 symbols', async () => {
+    const error = await api.post('/api/users')
+      .send({ username: validUser.username, name: validUser.name })
+      .expect(400)
+
+    expect(error.body.error).toBe('password must be more that 2 characters long')
+
+    const users = await helper.usersInDb()
+
+    expect(users.length).toBe(1)
+  })
+
   test('return 400 status code when username is the same', async () => {
     await api.post('/api/users')
       .send({ ...validUser, username: 'root' })
