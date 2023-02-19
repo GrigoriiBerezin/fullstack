@@ -1,10 +1,21 @@
 const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken')
 const supertest = require('supertest')
 const helper = require('./test_helper')
 const app = require('../app')
 const Note = require('../models/note')
+const User = require('../models/user')
 
 const api = supertest(app)
+
+let token = ''
+
+beforeAll(async () => {
+  await User.deleteMany({})
+  await User.insertMany(helper.initUser)
+  const user = (await helper.usersInDb())[0]
+  token = 'Bearer ' + jwt.sign({ username: user.username, id: user.id }, process.env.SECRET)
+})
 
 beforeEach(async () => {
   await Note.deleteMany({})
@@ -50,7 +61,7 @@ describe('viewing a specific note', () => {
     expect(resultNote.body).toEqual(noteToView)
   })
 
-  test('fails with statuscode 404 if note does not exist', async () => {
+  test('fails with status code 404 if note does not exist', async () => {
     const validNonexistingId = await helper.nonExistingId()
 
     await api
@@ -58,7 +69,7 @@ describe('viewing a specific note', () => {
       .expect(404)
   })
 
-  test('fails with statuscode 400 if id is invalid', async () => {
+  test('fails with status code 400 if id is invalid', async () => {
     const invalidId = '5a3d5da59070081a82a3445'
 
     await api
@@ -76,6 +87,7 @@ describe('addition of a new note', () => {
 
     await api
       .post('/api/notes')
+      .set('Authorization', token)
       .send(newNote)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -96,8 +108,25 @@ describe('addition of a new note', () => {
 
     await api
       .post('/api/notes')
+      .set('Authorization', token)
       .send(newNote)
       .expect(400)
+
+    const notesAtEnd = await helper.notesInDb()
+
+    expect(notesAtEnd).toHaveLength(helper.initNotes.length)
+  })
+
+  test('fails with status code 401 for not authorized user', async () => {
+    const newNote = {
+      content: 'async/await simplifies making async calls',
+      important: true,
+    }
+
+    await api
+      .post('/api/notes')
+      .send(newNote)
+      .expect(401)
 
     const notesAtEnd = await helper.notesInDb()
 

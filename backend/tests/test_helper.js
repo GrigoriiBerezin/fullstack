@@ -14,6 +14,13 @@ const initNotes = [
   }
 ]
 
+const initUser = {
+  username: 'root',
+  name: 'Superuser',
+  passwordHash: '$2a$10$z5gpjNaRXze9Bs4YTkTB4OTFfOILtCu4qsRlvytYyEHyQ8cprVxPq'
+}
+
+
 const nonExistingId = async () => {
   const note = new Note({ content: 'willremovethissoon' })
   await note.save()
@@ -33,5 +40,9 @@ const usersInDb = async () => {
 }
 
 module.exports = {
-  initNotes, nonExistingId, notesInDb, usersInDb
+  initNotes,
+  initUser,
+  nonExistingId,
+  notesInDb,
+  usersInDb
 }
