@@ -9,6 +9,7 @@
     "build:ui": "rm -rf build && cd ../notes && npm run build && cp -r build ../backend",
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
+    "dev:full": "npm run build:ui && npm run dev",
     "logs:prod": "fly logs",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand --silent"
   },
