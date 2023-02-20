@@ -16,9 +16,9 @@ beforeAll(async () => {
   const user = helper.initUser
 
   await User.deleteMany({})
-  const newUser = await (new User(user)).save()
-  userId = newUser._id
-  token = 'Bearer ' + await jwt.sign({ username: newUser.username, id: newUser._id }, config.SECRET)
+  const { id, newToken } = await helper.createTokenWithId(user)
+  userId = id
+  token = newToken
 })
 
 beforeEach(async () => {
@@ -29,18 +29,21 @@ beforeEach(async () => {
 describe('get all blogs', () => {
   test('return json type response', async () => {
     await api.get('/api/blogs')
+      .set('Authorization', token)
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('return exact amount of blogs', async () => {
     const blogs = await api.get('/api/blogs')
+      .set('Authorization', token)
 
     expect(blogs.body.length).toBe(helper.initBlogs.length)
   })
 
   test('the first blog is within returned blogs', async () => {
     const blogs = await api.get('/api/blogs')
+      .set('Authorization', token)
 
     const contents = blogs.body.map(b => b.title)
 
@@ -49,6 +52,7 @@ describe('get all blogs', () => {
 
   test('blog contains id instead of _id field', async () => {
     const blogs = await api.get('/api/blogs')
+      .set('Authorization', token)
 
     const content = blogs.body[0]
 
@@ -76,7 +80,11 @@ describe('create blog', () => {
   })
 
   test('return id of created blog', async () => {
-    const newId = (await api.post('/api/blogs').set('Authorization', token).send(newBlog)).body.id
+    const newId = (await api.post('/api/blogs')
+      .set('Authorization', token)
+      .send(newBlog))
+      .body
+      .id
 
     const theLastBlog = await helper.theLastBlog()
 
@@ -158,7 +166,7 @@ describe('delete blog', () => {
     expect(deletedBlog).toBeUndefined()
   })
 
-  test('return 401 status code when try to delete not your own blog', async () => {
+  test('return 401 status code when try to use not exist user', async () => {
     const blogId = (await helper.blogsInDb())[0].id
     const nonExistedId = await helper.nonExistedId()
     const newToken = 'Bearer ' + await jwt.sign({ id: nonExistedId }, config.SECRET)
@@ -169,8 +177,24 @@ describe('delete blog', () => {
 
     const blogs = await helper.blogsInDb()
 
-    expect(response.body.error).toBe('cannot delete not your own blog')
+    expect(response.body.error).toBe('user doesn\'t exist')
     expect(blogs.length).toBe(helper.initBlogs.length)
+  })
+
+  test('return 401 status code when try to delete not your own blog', async () => {
+    const user = {
+      username: 'Random',
+      name: 'Name',
+      password: 'Hola'
+    }
+    const { newToken } = await helper.createTokenWithId(user)
+    const blogId = (await helper.blogsInDb())[0].id
+
+    const response = await api.delete(`/api/blogs/${blogId}`)
+      .set('Authorization', newToken)
+      .expect(401)
+
+    expect(response.body.error).toBe('cannot delete not your own blog')
   })
 })
 
@@ -187,6 +211,7 @@ describe('update blog', () => {
 
     await api.put(`/api/blogs/${id}`)
       .send(updatedNote)
+      .set('Authorization', token)
       .expect(200)
 
     const allBlogs = await helper.blogsInDb()
