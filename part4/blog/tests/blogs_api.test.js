@@ -29,21 +29,18 @@ beforeEach(async () => {
 describe('get all blogs', () => {
   test('return json type response', async () => {
     await api.get('/api/blogs')
-      .set('Authorization', token)
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('return exact amount of blogs', async () => {
     const blogs = await api.get('/api/blogs')
-      .set('Authorization', token)
 
     expect(blogs.body.length).toBe(helper.initBlogs.length)
   })
 
   test('the first blog is within returned blogs', async () => {
     const blogs = await api.get('/api/blogs')
-      .set('Authorization', token)
 
     const contents = blogs.body.map(b => b.title)
 
@@ -52,7 +49,6 @@ describe('get all blogs', () => {
 
   test('blog contains id instead of _id field', async () => {
     const blogs = await api.get('/api/blogs')
-      .set('Authorization', token)
 
     const content = blogs.body[0]
 
@@ -147,7 +143,7 @@ describe('create blog', () => {
 
     const blogs = await helper.blogsInDb()
 
-    expect(error.body.error).toBe('jwt must be provided')
+    expect(error.body.error).toBe('user doesn\'t exist')
     expect(helper.initBlogs.length).toBe(blogs.length)
   })
 })
@@ -211,7 +207,6 @@ describe('update blog', () => {
 
     await api.put(`/api/blogs/${id}`)
       .send(updatedNote)
-      .set('Authorization', token)
       .expect(200)
 
     const allBlogs = await helper.blogsInDb()
