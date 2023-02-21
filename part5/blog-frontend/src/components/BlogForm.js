@@ -1,0 +1,66 @@
+import {useState} from 'react'
+import blogService from '../services/blogs'
+
+const BlogForm = ({blogsState, notifier}) => {
+    const [title, setTitle] = useState('')
+    const [author, setAuthor] = useState('')
+    const [url, setUrl] = useState('')
+
+    const [blogs, setBlogs] = blogsState
+
+    const onSubmit = async (event) => {
+        event.preventDefault()
+        const body = event.target
+
+        const blog = {
+            title: body.title.value ? body.title.value : null,
+            author: body.author.value ? body.author.value : null,
+            url: body.url.value ? body.url.value : null
+        }
+
+        try {
+            const createdBlog = await blogService.create(blog)
+            notifier({type: 'success', text: `A new blog '${createdBlog.title}' by ${createdBlog.author} added`})
+            setBlogs(blogs.concat(createdBlog))
+            setTitle('')
+            setAuthor('')
+            setUrl('')
+        } catch (exception) {
+            notifier({type: 'error', text: exception.response.data.error})
+        }
+    }
+
+    return <form onSubmit={onSubmit}>
+        <h2>Create new</h2>
+        <div>
+            title
+            <input
+                type='text'
+                value={title}
+                name='title'
+                onChange={({target}) => setTitle(target.value)}
+            />
+        </div>
+        <div>
+            author
+            <input
+                type='text'
+                value={author}
+                name='author'
+                onChange={({target}) => setAuthor(target.value)}
+            />
+        </div>
+        <div>
+            url
+            <input
+                type='text'
+                value={url}
+                name='url'
+                onChange={({target}) => setUrl(target.value)}
+            />
+        </div>
+        <button type='submit'>create</button>
+    </form>
+}
+
+export default BlogForm

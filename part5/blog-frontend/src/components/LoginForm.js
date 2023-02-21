@@ -2,7 +2,7 @@ import {useState} from 'react'
 import loginService from '../services/login'
 import blogService from '../services/blogs'
 
-const LoginForm = ({userState, onError}) => {
+const LoginForm = ({userState, notifier}) => {
     const handleSubmit = async (event) => {
         event.preventDefault()
 
@@ -16,7 +16,7 @@ const LoginForm = ({userState, onError}) => {
             setUsername('')
             setPassword('')
         } catch (exception) {
-            onError(exception.response.data.error)
+            notifier({type: 'error', text: exception.response.data.error})
         }
     }
 

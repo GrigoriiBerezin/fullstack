@@ -1,11 +1,12 @@
 import {useState, useEffect} from 'react'
 import blogService from './services/blogs'
 import Message from './components/Message'
-import BlogList from './components/Bloglist'
+import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 
 const App = () => {
-    const [blogs, setBlogs] = useState([])
+    const blogsState = useState([])
+    const [, setBlogs] = blogsState
     const [message, setMessage] = useState(null)
 
     const userState = useState(null)
@@ -33,13 +34,11 @@ const App = () => {
         setTimeout(() => setMessage(null), 5000)
     }
 
-    const onError = (text) => notify({type: 'error', text})
-
     return (
         <div>
             <Message message={message}/>
-            <LoginForm userState={userState} onError={onError}/>
-            {user && <BlogList blogs={blogs}/>}
+            <LoginForm userState={userState} notifier={notify}/>
+            {user && <BlogList blogsState={blogsState} notifier={notify}/>}
         </div>
     )
 }
