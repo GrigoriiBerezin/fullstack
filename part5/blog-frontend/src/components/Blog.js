@@ -21,7 +21,7 @@ const Blog = ({ blog, username, onDelete, onLike }) => {
         <div style={blogStyle}>
             {blog.title} by {blog.author}
             <button onClick={onClick}>{visible ? 'hide' : 'view'}</button>
-            <div style={showOnVisible}>
+            <div className='full-info' style={showOnVisible}>
                 <a href={blog.url}>link</a>
                 <p>
                     likes: {blog.likes}
