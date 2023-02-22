@@ -5,6 +5,9 @@ import Blog from './Blog'
 import userEvent from '@testing-library/user-event'
 
 describe('<Blog />', () => {
+    let onDelete
+    let onLike
+    let container
     const blog = {
         title: 'Blog title',
         author: 'Tester',
@@ -16,12 +19,13 @@ describe('<Blog />', () => {
     }
     const username = 'tester'
 
+    beforeEach(() => {
+        onDelete = jest.fn()
+        onLike = jest.fn()
+        container = render(<Blog onDelete={onDelete} onLike={onLike} blog={blog} username={username}/>).container
+    })
+
     test('render only title and author of the blog', () => {
-        const onDelete = jest.fn()
-        const onLike = jest.fn()
-
-        const container = render(<Blog onDelete={onDelete} onLike={onLike} blog={blog} username={username}/>).container
-
         const info = screen.getByText('Blog title by Tester')
         expect(info).toBeDefined()
 
@@ -30,11 +34,6 @@ describe('<Blog />', () => {
     })
 
     test('render blog\'s URL and number of likes after clicking button', async () => {
-        const onDelete = jest.fn()
-        const onLike = jest.fn()
-
-        const container = render(<Blog onDelete={onDelete} onLike={onLike} blog={blog} username={username}/>).container
-
         const user = userEvent.setup()
         const button = screen.getByText('view')
 
@@ -48,5 +47,14 @@ describe('<Blog />', () => {
 
         expect(likes).toBeDefined()
         expect(url).toHaveAttribute('href', blog.url)
+    })
+
+    test('render functional increase like button', async () => {
+        const user = userEvent.setup()
+        const button = screen.getByText('like')
+
+        await user.dblClick(button)
+
+        expect(onLike.mock.calls).toHaveLength(2)
     })
 })
