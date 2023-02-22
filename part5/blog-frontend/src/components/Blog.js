@@ -1,6 +1,7 @@
 import {useState} from 'react'
+import blogService from '../services/blogs'
 
-const Blog = ({blog}) => {
+const Blog = ({blog, notifier}) => {
     const blogStyle = {
         paddingTop: 10,
         paddingLeft: 2,
@@ -9,6 +10,7 @@ const Blog = ({blog}) => {
         marginBottom: 5
     }
 
+    const [actualBlog, setActualBlog] = useState(blog)
     const [visible, setVisible] = useState(false)
     const showOnVisible = {display: visible ? '' : 'none'}
 
@@ -16,17 +18,34 @@ const Blog = ({blog}) => {
         setVisible(!visible)
     }
 
+    const onLike = async () => {
+        const request = {
+            user: actualBlog.user.id,
+            likes: actualBlog.likes + 1,
+            author: actualBlog.author,
+            title: actualBlog.title,
+            url: actualBlog.url
+        }
+
+        try {
+            const updatedBlog = await blogService.update(actualBlog.id, request)
+            setActualBlog(updatedBlog)
+        } catch (exception) {
+            notifier({type: 'error', text: exception.response.data.error})
+        }
+    }
+
     return (
         <div style={blogStyle}>
-            {blog.title} {blog.author}
+            {actualBlog.title} {actualBlog.author}
             <button onClick={onClick}>{visible ? 'hide' : 'view'}</button>
             <div style={showOnVisible}>
-                <a href={blog.url}>link</a>
+                <a href={actualBlog.url}>link</a>
                 <p>
-                    likes: {blog.likes}
-                    <button>like</button>
+                    likes: {actualBlog.likes}
+                    <button onClick={onLike}>like</button>
                 </p>
-                <p>{blog.user.name}</p>
+                <p>{actualBlog.user.name}</p>
             </div>
         </div>
     )

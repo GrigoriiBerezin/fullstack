@@ -3,7 +3,7 @@ const Blog = require('../models/blog')
 const { userExtractor } = require('../utils/middleware')
 
 blogRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+  const blogs = await Blog.find({}).populate('user')
   response.json(blogs)
 })
 
@@ -26,7 +26,7 @@ blogRouter.post('/', userExtractor, async (request, response) => {
   let savedBlog = await blog.save()
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
-  savedBlog = await savedBlog.populate('user', { username: 1, name: 1 })
+  savedBlog = await savedBlog.populate('user')
 
   response.status(201).json(savedBlog)
 })
@@ -49,7 +49,7 @@ blogRouter.delete('/:id', userExtractor, async (request, response) => {
 })
 
 blogRouter.put('/:id', async (request, response) => {
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, request.body, { new: true })
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, request.body, { new: true }).populate('user')
   response.json(updatedBlog)
 })
 
