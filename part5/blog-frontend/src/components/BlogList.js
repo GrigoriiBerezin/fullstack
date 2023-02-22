@@ -10,6 +10,7 @@ const BlogList = ({notifier}) => {
     useEffect(() => {
         const fetchDate = async () => {
             const blogs = await blogService.getAll()
+            blogs.sort((b1, b2) => b2.likes - b1.likes)
             setBlogs(blogs)
         }
         fetchDate()
