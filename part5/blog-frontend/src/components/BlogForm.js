@@ -1,7 +1,8 @@
-import {useState} from 'react'
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 import blogService from '../services/blogs'
 
-const BlogForm = ({blogs, setBlogs, notifier}) => {
+const BlogForm = ({ blogs, setBlogs, notifier }) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
@@ -18,13 +19,13 @@ const BlogForm = ({blogs, setBlogs, notifier}) => {
 
         try {
             const createdBlog = await blogService.create(blog)
-            notifier({type: 'success', text: `A new blog '${createdBlog.title}' by ${createdBlog.author} added`})
+            notifier({ type: 'success', text: `A new blog '${createdBlog.title}' by ${createdBlog.author} added` })
             setBlogs(blogs.concat(createdBlog))
             setTitle('')
             setAuthor('')
             setUrl('')
         } catch (exception) {
-            notifier({type: 'error', text: exception.response.data.error})
+            notifier({ type: 'error', text: exception.response.data.error })
         }
     }
 
@@ -36,7 +37,7 @@ const BlogForm = ({blogs, setBlogs, notifier}) => {
                 type='text'
                 value={title}
                 name='title'
-                onChange={({target}) => setTitle(target.value)}
+                onChange={({ target }) => setTitle(target.value)}
             />
         </div>
         <div>
@@ -45,7 +46,7 @@ const BlogForm = ({blogs, setBlogs, notifier}) => {
                 type='text'
                 value={author}
                 name='author'
-                onChange={({target}) => setAuthor(target.value)}
+                onChange={({ target }) => setAuthor(target.value)}
             />
         </div>
         <div>
@@ -54,11 +55,17 @@ const BlogForm = ({blogs, setBlogs, notifier}) => {
                 type='text'
                 value={url}
                 name='url'
-                onChange={({target}) => setUrl(target.value)}
+                onChange={({ target }) => setUrl(target.value)}
             />
         </div>
         <button type='submit'>create</button>
     </form>
+}
+
+BlogForm.propTypes = {
+    blogs: PropTypes.arrayOf(PropTypes.object).isRequired,
+    setBlogs: PropTypes.func.isRequired,
+    notifier: PropTypes.func.isRequired
 }
 
 export default BlogForm

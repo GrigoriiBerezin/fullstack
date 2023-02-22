@@ -1,10 +1,11 @@
 import Blog from './Blog'
 import BlogForm from './BlogForm'
 import Togglable from './Togglable'
-import {useEffect, useState} from 'react'
-import blogService from "../services/blogs"
+import { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import blogService from '../services/blogs'
 
-const BlogList = ({notifier, username}) => {
+const BlogList = ({ notifier, username }) => {
     const [blogs, setBlogs] = useState([])
 
     useEffect(() => {
@@ -24,7 +25,7 @@ const BlogList = ({notifier, username}) => {
             const updatedBlogs = blogs.filter(b => b.id !== blog.id)
             setBlogs(updatedBlogs)
         } catch (exception) {
-            notifier({type: 'error', text: exception.response.data.error})
+            notifier({ type: 'error', text: exception.response.data.error })
         }
     }
 
@@ -42,7 +43,7 @@ const BlogList = ({notifier, username}) => {
             const updatedBlogs = blogs.map(b => b.id === updatedBlog.id ? updatedBlog : b)
             setBlogs(updatedBlogs)
         } catch (exception) {
-            notifier({type: 'error', text: exception.response.data.error})
+            notifier({ type: 'error', text: exception.response.data.error })
         }
     }
 
@@ -63,6 +64,11 @@ const BlogList = ({notifier, username}) => {
             onDelete={handleDelete}
         />)}
     </>
+}
+
+BlogList.propTypes = {
+    notifier: PropTypes.func.isRequired,
+    username: PropTypes.string.isRequired
 }
 
 export default BlogList
