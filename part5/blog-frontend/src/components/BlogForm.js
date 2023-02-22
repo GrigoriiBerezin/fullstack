@@ -1,35 +1,26 @@
-import { useState } from 'react'
+import { forwardRef, useImperativeHandle, useState } from 'react'
 import PropTypes from 'prop-types'
-import blogService from '../services/blogs'
 
-const BlogForm = ({ blogs, setBlogs, notifier }) => {
+const BlogForm = forwardRef((props, refs) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
 
-    const onSubmit = async (event) => {
-        event.preventDefault()
-        const body = event.target
-
-        const blog = {
-            title: body.title.value ? body.title.value : null,
-            author: body.author.value ? body.author.value : null,
-            url: body.url.value ? body.url.value : null
-        }
-
-        try {
-            const createdBlog = await blogService.create(blog)
-            notifier({ type: 'success', text: `A new blog '${createdBlog.title}' by ${createdBlog.author} added` })
-            setBlogs(blogs.concat(createdBlog))
-            setTitle('')
-            setAuthor('')
-            setUrl('')
-        } catch (exception) {
-            notifier({ type: 'error', text: exception.response.data.error })
-        }
+    const blog = {
+        title: title ? title : null,
+        author: author ? author : null,
+        url: url ? url : null
     }
 
-    return <form onSubmit={onSubmit}>
+    useImperativeHandle(refs, () => {
+        return {
+            setTitle,
+            setAuthor,
+            setUrl
+        }
+    })
+
+    return <form onSubmit={(e) => props.onSubmit(e, blog)}>
         <h2>Create new</h2>
         <div>
             title
@@ -60,12 +51,12 @@ const BlogForm = ({ blogs, setBlogs, notifier }) => {
         </div>
         <button type='submit'>create</button>
     </form>
-}
+})
+
+BlogForm.displayName = 'BlogForm'
 
 BlogForm.propTypes = {
-    blogs: PropTypes.arrayOf(PropTypes.object).isRequired,
-    setBlogs: PropTypes.func.isRequired,
-    notifier: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired
 }
 
 export default BlogForm

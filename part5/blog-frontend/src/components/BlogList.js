@@ -1,12 +1,13 @@
 import Blog from './Blog'
 import BlogForm from './BlogForm'
 import Togglable from './Togglable'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import blogService from '../services/blogs'
 
 const BlogList = ({ notifier, username }) => {
     const [blogs, setBlogs] = useState([])
+    const formRef = useRef()
 
     useEffect(() => {
         const fetchDate = async () => {
@@ -47,13 +48,27 @@ const BlogList = ({ notifier, username }) => {
         }
     }
 
+    const onSubmit = async (event, blog) => {
+        event.preventDefault()
+
+        try {
+            const createdBlog = await blogService.create(blog)
+            notifier({ type: 'success', text: `A new blog '${createdBlog.title}' by ${createdBlog.author} added` })
+            setBlogs(blogs.concat(createdBlog))
+            formRef.current.setTitle('')
+            formRef.current.setAuthor('')
+            formRef.current.setUrl('')
+        } catch (exception) {
+            notifier({ type: 'error', text: exception.response.data.error })
+        }
+    }
+
     return <>
         <h2>blogs</h2>
         <Togglable buttonLabel='new blog'>
             <BlogForm
-                blogs={blogs}
-                setBlogs={setBlogs}
-                notifier={notifier}
+                onSubmit={onSubmit}
+                ref={formRef}
             />
         </Togglable>
         {blogs.map(blog => <Blog
