@@ -1,12 +1,10 @@
 import {useState} from 'react'
 import blogService from '../services/blogs'
 
-const BlogForm = ({blogsState, notifier}) => {
+const BlogForm = ({blogs, setBlogs, notifier}) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
-
-    const [blogs, setBlogs] = blogsState
 
     const onSubmit = async (event) => {
         event.preventDefault()

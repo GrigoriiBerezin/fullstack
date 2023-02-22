@@ -5,20 +5,10 @@ import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 
 const App = () => {
-    const blogsState = useState([])
-    const [, setBlogs] = blogsState
     const [message, setMessage] = useState(null)
 
     const userState = useState(null)
     const [user, setUser] = userState
-
-    useEffect(() => {
-        const fetchDate = async () => {
-            const blogs = await blogService.getAll()
-            setBlogs(blogs)
-        }
-        fetchDate()
-    }, [])
 
     useEffect(() => {
         const loggedUserJSON = window.localStorage.getItem('userToken')
@@ -38,7 +28,7 @@ const App = () => {
         <div>
             <Message message={message}/>
             <LoginForm userState={userState} notifier={notify}/>
-            {user && <BlogList blogsState={blogsState} notifier={notify}/>}
+            {user && <BlogList notifier={notify}/>}
         </div>
     )
 }
