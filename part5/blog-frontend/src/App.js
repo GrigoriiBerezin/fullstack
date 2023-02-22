@@ -28,7 +28,7 @@ const App = () => {
         <div>
             <Message message={message}/>
             <LoginForm userState={userState} notifier={notify}/>
-            {user && <BlogList notifier={notify}/>}
+            {user && <BlogList notifier={notify} username={user.username}/>}
         </div>
     )
 }
