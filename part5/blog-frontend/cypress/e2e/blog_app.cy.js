@@ -32,4 +32,26 @@ describe('Blog app', function () {
                 .and('have.css', 'border-style', 'solid')
         })
     })
+
+    describe('When logged in', function() {
+        beforeEach(function() {
+            cy.request('POST', 'http://localhost:3001/api/login', { username: 'ping', password: 'terrano' })
+                .then(response => {
+                    localStorage.setItem('userToken', JSON.stringify(response.body))
+                    cy.visit('http://localhost:3000')
+                })
+        })
+
+        it('A blog can be created', function() {
+            cy.contains('new blog').click()
+
+            cy.get('#title').type('first blog')
+            cy.get('#author').type('tester')
+            cy.get('#url').type('empty')
+            cy.contains('create').click()
+
+            cy.contains('first blog by tester')
+                .contains('view')
+        })
+    })
 })
