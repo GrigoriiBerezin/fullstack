@@ -40,6 +40,7 @@ const LoginForm = ({ userState, notifier }) => {
             <h2>Log in application</h2>
             <div>
                 <input
+                    id='username'
                     type='text'
                     value={username}
                     name='username'
@@ -47,6 +48,7 @@ const LoginForm = ({ userState, notifier }) => {
             </div>
             <div>
                 <input
+                    id='password'
                     type='password'
                     value={password}
                     name='password'
