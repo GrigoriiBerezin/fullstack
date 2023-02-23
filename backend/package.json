@@ -11,7 +11,9 @@
     "deploy:full": "npm run build:ui && npm run deploy",
     "dev:full": "npm run build:ui && npm run dev",
     "logs:prod": "fly logs",
-    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --silent"
+    "lint": "eslint . --fix",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --silent",
+    "start:test": "cross-env NODE_ENV=test node index.js"
   },
   "author": "Grigorii Berezin",
   "license": "MIT",
