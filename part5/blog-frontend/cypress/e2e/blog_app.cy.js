@@ -1,7 +1,11 @@
 describe('Blog app', function () {
     beforeEach(function () {
         cy.request('POST', 'http://localhost:3001/api/testing/reset')
-        cy.request('POST', 'http://localhost:3001/api/users', { username: 'ping', name: 'Grigorii Berezin', password: 'terrano' })
+        cy.request('POST', 'http://localhost:3001/api/users', {
+            username: 'ping',
+            name: 'Grigorii Berezin',
+            password: 'terrano'
+        })
         cy.visit('http://localhost:3000')
     })
 
@@ -12,8 +16,8 @@ describe('Blog app', function () {
         cy.contains('login')
     })
 
-    describe('Login',function() {
-        it('succeeds with correct credentials', function() {
+    describe('Login', function () {
+        it('succeeds with correct credentials', function () {
             cy.get('#username').type('ping')
             cy.get('#password').type('terrano')
             cy.contains('login').click()
@@ -21,7 +25,7 @@ describe('Blog app', function () {
             cy.contains('Grigorii Berezin logged in')
         })
 
-        it('fails with wrong credentials', function() {
+        it('fails with wrong credentials', function () {
             cy.get('#username').type('ping')
             cy.get('#password').type('wrong')
             cy.contains('login').click()
@@ -33,16 +37,12 @@ describe('Blog app', function () {
         })
     })
 
-    describe('When logged in', function() {
-        beforeEach(function() {
-            cy.request('POST', 'http://localhost:3001/api/login', { username: 'ping', password: 'terrano' })
-                .then(response => {
-                    localStorage.setItem('userToken', JSON.stringify(response.body))
-                    cy.visit('http://localhost:3000')
-                })
+    describe('When logged in', function () {
+        beforeEach(function () {
+            cy.login({ username: 'ping', password: 'terrano' })
         })
 
-        it('A blog can be created', function() {
+        it('A blog can be created', function () {
             cy.contains('new blog').click()
 
             cy.get('#title').type('first blog')
@@ -52,6 +52,28 @@ describe('Blog app', function () {
 
             cy.contains('first blog by tester')
                 .contains('view')
+        })
+
+        describe('And few blogs are created', function () {
+            beforeEach(function () {
+                cy.addBlog({ title: 'first blog', author: 'tester', url: 'url#1' })
+                cy.addBlog({ title: 'second blog', author: 'tester', url: 'url#2' })
+                cy.addBlog({ title: 'third blog', author: 'tester', url: 'url#2' })
+            })
+
+            it('User can like blog and increase likes count', function () {
+                cy.contains('first blog by tester')
+                    .contains('view')
+                    .click()
+
+                cy.contains('first blog by tester')
+                    .contains('likes: 0')
+                    .contains('like')
+                    .click()
+
+                cy.contains('first blog by tester')
+                    .contains('likes: 1')
+            })
         })
     })
 })
