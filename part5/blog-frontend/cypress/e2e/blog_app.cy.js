@@ -74,6 +74,18 @@ describe('Blog app', function () {
                 cy.contains('first blog by tester')
                     .contains('likes: 1')
             })
+
+            it('User can delete blog which create', function () {
+                cy.contains('first blog by tester')
+                    .contains('view')
+                    .click()
+
+                cy.contains('first blog by tester')
+                    .contains('delete')
+                    .click()
+
+                cy.should('not.contain', 'first blog by tester')
+            })
         })
     })
 })
