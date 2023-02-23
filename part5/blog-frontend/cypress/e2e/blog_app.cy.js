@@ -57,8 +57,8 @@ describe('Blog app', function () {
         describe('And few blogs are created', function () {
             beforeEach(function () {
                 cy.addBlog({ title: 'first blog', author: 'tester', url: 'url#1' })
-                cy.addBlog({ title: 'second blog', author: 'tester', url: 'url#2' })
-                cy.addBlog({ title: 'third blog', author: 'tester', url: 'url#2' })
+                cy.addBlog({ title: 'second blog', author: 'tester', url: 'url#2', totalLikes: 10 })
+                cy.addBlog({ title: 'third blog', author: 'tester', url: 'url#2', totalLikes: 6 })
             })
 
             it('User can like blog and increase likes count', function () {
@@ -101,7 +101,13 @@ describe('Blog app', function () {
 
                 cy.contains('first blog by tester')
                     .should('not.contain', 'delete')
-            } )
+            })
+
+            it('Blogs are sorted by likes count', function () {
+                cy.get('.blog').eq(0).should('contain', 'second blog')
+                cy.get('.blog').eq(1).should('contain', 'third blog')
+                cy.get('.blog').eq(2).should('contain', 'first blog')
+            })
         })
     })
 })
