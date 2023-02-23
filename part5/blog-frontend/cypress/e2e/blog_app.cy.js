@@ -86,6 +86,22 @@ describe('Blog app', function () {
 
                 cy.should('not.contain', 'first blog by tester')
             })
+
+            it('User can\'t delete not own blog', function () {
+                cy.request('POST', 'http://localhost:3001/api/users', {
+                    username: 'root',
+                    name: 'Superuser',
+                    password: 'password'
+                })
+                cy.login({ username: 'root', password: 'password' })
+
+                cy.contains('first blog by tester')
+                    .contains('view')
+                    .click()
+
+                cy.contains('first blog by tester')
+                    .should('not.contain', 'delete')
+            } )
         })
     })
 })
