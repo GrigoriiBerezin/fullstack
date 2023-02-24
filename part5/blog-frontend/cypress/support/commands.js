@@ -24,22 +24,30 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 Cypress.Commands.add('login', ({ username, password }) => {
-    cy.request('POST', 'http://localhost:3001/api/login', { username, password })
+    cy.request('POST', `${Cypress.env('BACKEND')}/login`, { username, password })
         .then(response => {
             localStorage.setItem('userToken', JSON.stringify(response.body))
-            cy.visit('http://localhost:3000')
+            cy.visit('')
         })
 })
 
 Cypress.Commands.add('addBlog', ({ title, author, url, totalLikes }) => {
     const likes = totalLikes ? totalLikes : 0
     cy.request({
-        url: 'http://localhost:3001/api/blogs',
+        url: `${Cypress.env('BACKEND')}/blogs`,
         method: 'POST',
         body: { title, author, url, likes },
         headers: {
             'Authorization': `Bearer ${JSON.parse(localStorage.getItem('userToken')).token}`
         }
     })
-    cy.visit('http://localhost:3000')
+    cy.visit('')
+})
+
+Cypress.Commands.add('createUser', ({ username, name, password }) => {
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, { username, name, password })
+})
+
+Cypress.Commands.add('resetDb', () => {
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
 })

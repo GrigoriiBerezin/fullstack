@@ -1,12 +1,17 @@
 describe('Blog app', function () {
     beforeEach(function () {
-        cy.request('POST', 'http://localhost:3001/api/testing/reset')
-        cy.request('POST', 'http://localhost:3001/api/users', {
+        cy.resetDb()
+        cy.createUser({
             username: 'ping',
             name: 'Grigorii Berezin',
             password: 'terrano'
         })
-        cy.visit('http://localhost:3000')
+        cy.createUser({
+            username: 'root',
+            name: 'Superuser',
+            password: 'password'
+        })
+        cy.visit('')
     })
 
     it('Login form is shown', function () {
@@ -51,7 +56,34 @@ describe('Blog app', function () {
             cy.contains('create').click()
 
             cy.contains('first blog by tester')
-                .contains('view')
+        })
+
+        describe('And blog has been created', function () {
+            beforeEach(function () {
+                cy.addBlog({ title: 'first blog', author: 'tester', url: 'url#1' })
+            })
+
+            it('Can be liked', function () {
+                cy.contains('view').click()
+                cy.contains('like').click()
+
+                cy.contains('likes: 1')
+            })
+
+            it('The creator can delete it', function () {
+                cy.contains('view').click()
+                cy.contains('delete').click()
+
+                cy.contains('removed')
+                cy.contains('first blog by tester').should('not.exist')
+            })
+
+            it('A non creator can\'t delete it', function () {
+                cy.login({ username: 'root', password: 'password' })
+
+                cy.contains('view').click()
+                cy.contains('delete').should('not.exist')
+            })
         })
 
         describe('And few blogs are created', function () {
@@ -59,48 +91,6 @@ describe('Blog app', function () {
                 cy.addBlog({ title: 'first blog', author: 'tester', url: 'url#1' })
                 cy.addBlog({ title: 'second blog', author: 'tester', url: 'url#2', totalLikes: 10 })
                 cy.addBlog({ title: 'third blog', author: 'tester', url: 'url#2', totalLikes: 6 })
-            })
-
-            it('User can like blog and increase likes count', function () {
-                cy.contains('first blog by tester')
-                    .contains('view')
-                    .click()
-
-                cy.contains('first blog by tester')
-                    .contains('likes: 0')
-                    .contains('like')
-                    .click()
-
-                cy.contains('first blog by tester')
-                    .contains('likes: 1')
-            })
-
-            it('User can delete blog which create', function () {
-                cy.contains('first blog by tester')
-                    .contains('view')
-                    .click()
-
-                cy.contains('first blog by tester')
-                    .contains('delete')
-                    .click()
-
-                cy.should('not.contain', 'first blog by tester')
-            })
-
-            it('User can\'t delete not own blog', function () {
-                cy.request('POST', 'http://localhost:3001/api/users', {
-                    username: 'root',
-                    name: 'Superuser',
-                    password: 'password'
-                })
-                cy.login({ username: 'root', password: 'password' })
-
-                cy.contains('first blog by tester')
-                    .contains('view')
-                    .click()
-
-                cy.contains('first blog by tester')
-                    .should('not.contain', 'delete')
             })
 
             it('Blogs are sorted by likes count', function () {

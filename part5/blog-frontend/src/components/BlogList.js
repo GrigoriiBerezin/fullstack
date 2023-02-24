@@ -25,6 +25,7 @@ const BlogList = ({ notifier, username }) => {
             await blogService._delete(blog.id)
             const updatedBlogs = blogs.filter(b => b.id !== blog.id)
             setBlogs(updatedBlogs)
+            notifier({ type: 'success', text: `Blog ${blog.title} has been removed` })
         } catch (exception) {
             notifier({ type: 'error', text: exception.response.data.error })
         }
