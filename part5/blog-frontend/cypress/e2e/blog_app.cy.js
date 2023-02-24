@@ -15,7 +15,7 @@ describe('Blog app', function () {
     })
 
     it('Login form is shown', function () {
-        cy.contains('Log in application')
+        cy.contains('Log in to application')
         cy.get('#username')
         cy.get('#password')
         cy.contains('login')
@@ -36,7 +36,7 @@ describe('Blog app', function () {
             cy.contains('login').click()
 
             cy.get('.error')
-                .should('contain', 'invalid username or password')
+                .should('contain', 'Invalid username or password')
                 .and('have.css', 'color', 'rgb(255, 0, 0)')
                 .and('have.css', 'border-style', 'solid')
         })
@@ -75,7 +75,7 @@ describe('Blog app', function () {
                 cy.contains('delete').click()
 
                 cy.contains('removed')
-                cy.contains('first blog by tester').should('not.exist')
+                cy.contains(/^first blog by tester$/).should('not.exist')
             })
 
             it('A non creator can\'t delete it', function () {

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, username, onDelete, onLike }) => {
+const Blog = ({ blog, onDelete, onLike, canDelete }) => {
     const blogStyle = {
         paddingTop: 10,
         paddingLeft: 2,
@@ -11,7 +11,6 @@ const Blog = ({ blog, username, onDelete, onLike }) => {
     }
 
     const [visible, setVisible] = useState(false)
-    const showOnVisible = { display: visible ? '' : 'none' }
 
     const onClick = () => {
         setVisible(!visible)
@@ -21,22 +20,29 @@ const Blog = ({ blog, username, onDelete, onLike }) => {
         <div className='blog' style={blogStyle}>
             {blog.title} by {blog.author}
             <button onClick={onClick}>{visible ? 'hide' : 'view'}</button>
-            <div className='full-info' style={showOnVisible}>
-                <a href={blog.url}>link</a>
-                <p>
-                    likes: {blog.likes}
-                    <button onClick={() => onLike(blog)}>like</button>
-                </p>
-                <p>{blog.user.name}</p>
-                {blog.user.username === username && <button onClick={() => onDelete(blog)}>delete</button>}
-            </div>
+            {visible &&
+                <div className='full-info'>
+                    <a href={blog.url}>link</a>
+                    <p>
+                        likes: {blog.likes}
+                        <button onClick={() => onLike(blog)}>like</button>
+                    </p>
+                    <p>{blog.user.name}</p>
+                    {canDelete && <button onClick={onDelete}>delete</button>}
+                </div>
+            }
         </div>
     )
 }
 
 Blog.propTypes = {
-    blog: PropTypes.object.isRequired,
-    username: PropTypes.string.isRequired,
+    blog: PropTypes.shape({
+        title: PropTypes.string,
+        author: PropTypes.string,
+        url: PropTypes.string,
+        likes: PropTypes.number
+    }),
+    canDelete: PropTypes.bool.isRequired,
     onDelete: PropTypes.func.isRequired,
     onLike: PropTypes.func.isRequired
 }

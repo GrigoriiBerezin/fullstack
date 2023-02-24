@@ -7,7 +7,7 @@ import BlogForm from './BlogForm'
 describe('<BlogForm />', () => {
     test('update states and submit', async () => {
         const onSubmit = jest.fn()
-        const { container } = render(<BlogForm onSubmit={onSubmit}/>)
+        const { container } = render(<BlogForm createBlog={onSubmit}/>)
 
         const user = userEvent.setup()
 

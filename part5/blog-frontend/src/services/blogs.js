@@ -1,10 +1,9 @@
 import axios from 'axios'
+import storageService from '../services/storage'
 const baseUrl = '/api/blogs'
 
-let token = null
-
-const setToken = newToken => {
-    token = 'Bearer ' + newToken
+const headers = {
+    'Authorization': storageService.loadUser() ? `Bearer ${storageService.loadUser().token}` : null
 }
 
 const getAll = async () => {
@@ -13,29 +12,17 @@ const getAll = async () => {
 }
 
 const create = async (blog) => {
-    const config = {
-        headers: { Authorization: token }
-    }
-
-    const createdBlog = await axios.post(baseUrl, blog, config)
+    const createdBlog = await axios.post(baseUrl, blog, { headers })
     return createdBlog.data
 }
 
 const update = async (id, blog) => {
-    const config = {
-        headers: { Authorization: token }
-    }
-
-    const updatedBlog = await axios.put(`${baseUrl}/${id}`, blog, config)
+    const updatedBlog = await axios.put(`${baseUrl}/${id}`, blog, { headers })
     return updatedBlog.data
 }
 
 const _delete = async (id) => {
-    const config = {
-        headers: { Authorization: token }
-    }
-
-    await axios.delete(`${baseUrl}/${id}`, config)
+    await axios.delete(`${baseUrl}/${id}`, { headers })
 }
 
-export default { getAll, create, update, _delete, setToken }
+export default { getAll, create, update, _delete }

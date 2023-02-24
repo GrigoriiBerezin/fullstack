@@ -1,26 +1,27 @@
-import { forwardRef, useImperativeHandle, useState } from 'react'
+import { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const BlogForm = forwardRef((props, refs) => {
+const BlogForm = ({ createBlog }) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
 
-    const blog = {
-        title: title ? title : null,
-        author: author ? author : null,
-        url: url ? url : null
+    const onSubmit = async (event) => {
+        event.preventDefault()
+
+        const blog = {
+            title: title ? title : null,
+            author: author ? author : null,
+            url: url ? url : null
+        }
+
+        await createBlog(blog)
+        setTitle('')
+        setAuthor('')
+        setUrl('')
     }
 
-    useImperativeHandle(refs, () => {
-        return {
-            setTitle,
-            setAuthor,
-            setUrl
-        }
-    })
-
-    return <form onSubmit={(e) => props.onSubmit(e, blog)}>
+    return <form onSubmit={onSubmit}>
         <h2>Create new</h2>
         <div>
             title
@@ -54,12 +55,10 @@ const BlogForm = forwardRef((props, refs) => {
         </div>
         <button type='submit'>create</button>
     </form>
-})
-
-BlogForm.displayName = 'BlogForm'
+}
 
 BlogForm.propTypes = {
-    onSubmit: PropTypes.func.isRequired
+    createBlog: PropTypes.func.isRequired
 }
 
 export default BlogForm
