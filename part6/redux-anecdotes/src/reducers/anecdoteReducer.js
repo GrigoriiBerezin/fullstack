@@ -26,6 +26,8 @@ const reducer = (state = initialState, action) => {
     switch (action.type) {
         case 'LIKE':
             return state.map(anec => anec.id === action.payload.id ? {...anec, votes: anec.votes + 1} : anec)
+        case 'ADD':
+            return [...state, action.payload]
         default:
             return state
     }
@@ -35,6 +37,17 @@ export const voteFor = (id) => {
     return {
         type: 'LIKE',
         payload: { id }
+    }
+}
+
+export const addAnec = (content) => {
+    return {
+        type: 'ADD',
+        payload: {
+            content,
+            id: getId(),
+            votes: 0
+        }
     }
 }
 
