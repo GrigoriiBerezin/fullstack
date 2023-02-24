@@ -8,3 +8,5 @@ Completed parts:
 - part2
 - part3 ([Phonebook deploy](https://wild-firefly-5490.fly.dev/))
 - part4
+- part5
+- part6
