@@ -1,4 +1,4 @@
-const filterReducer = (state = {value: ''}, action) => {
+const filterReducer = (state = '', action) => {
     switch (action.type) {
         case 'CHANGE_FILTER':
             return action.payload
@@ -10,9 +10,7 @@ const filterReducer = (state = {value: ''}, action) => {
 export const changeFilter = (value) => {
     return {
         type: 'CHANGE_FILTER',
-        payload: {
-            value: value
-        }
+        payload: value
     }
 }
 
