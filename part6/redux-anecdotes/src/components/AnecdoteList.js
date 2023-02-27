@@ -7,8 +7,7 @@ const Anecdote = ({anecdote}) => {
 
     const vote = (anecdote) => {
         dispatch(voteFor(anecdote.id))
-        setInfo(`Vote for ${anecdote.content}`)(dispatch)
-        // dispatch(setNotification(`Vote for ${anecdote.content}`))
+        dispatch(setInfo(`Vote for ${anecdote.content}`))
     }
 
     return (<div>
