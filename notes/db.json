@@ -12,8 +12,13 @@
     },
     {
       "content": "adad",
-      "important": false,
+      "important": true,
       "id": 3
+    },
+    {
+      "content": "add",
+      "important": true,
+      "id": 4
     }
   ]
 }
