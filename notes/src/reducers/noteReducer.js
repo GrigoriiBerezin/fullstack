@@ -1,29 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const initialState = [
-    {
-        content: 'reducer defines how redux store works',
-        important: true,
-        id: 1,
-    },
-    {
-        content: 'state of store can contain any data',
-        important: false,
-        id: 2,
-    },
-]
-
 const noteSlice = createSlice({
     name: 'notes',
-    initialState,
+    initialState: [],
     reducers: {
         createNote(state, action) {
-            const content = action.payload
-            state.push({
-                content,
-                important: false,
-                id: generateId(),
-            })
+            state.push(action.payload)
         },
         toggleImportanceOf(state, action) {
             const id = action.payload
@@ -35,13 +17,13 @@ const noteSlice = createSlice({
             console.log(JSON.parse(JSON.stringify(state)))
             return state.map(note =>
                 note.id !== id ? note : changedNote)
+        },
+        setNotes(state, action) {
+            return action.payload
         }
     }
 })
 
-const generateId = () =>
-    Number((Math.random() * 1000000).toFixed(0))
-
-export const { createNote, toggleImportanceOf } = noteSlice.actions
+export const { createNote, toggleImportanceOf, setNotes } = noteSlice.actions
 
 export default noteSlice.reducer
