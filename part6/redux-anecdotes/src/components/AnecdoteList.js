@@ -11,7 +11,7 @@ const Anecdote = ({anecdote}) => {
         // dispatch(setNotification(`Vote for ${anecdote.content}`))
     }
 
-    return (<div key={anecdote.id}>
+    return (<div>
         <div>
             {anecdote.content}
         </div>
@@ -31,7 +31,7 @@ const AnecdoteList = () => {
 
     return (
         <>
-            {anecdotes.sort(byVotes).map(anecdote => <Anecdote anecdote={anecdote} />)}
+            {anecdotes.sort(byVotes).map(anecdote => <Anecdote key={anecdote.id} anecdote={anecdote} />)}
         </>
     )
 }
