@@ -2,7 +2,7 @@
   "notes": [
     {
       "content": "the app state is in redux store",
-      "important": false,
+      "important": true,
       "id": 1
     },
     {
@@ -12,13 +12,23 @@
     },
     {
       "content": "adad",
-      "important": true,
+      "important": false,
       "id": 3
     },
     {
       "content": "add",
       "important": true,
       "id": 4
+    },
+    {
+      "content": "hello",
+      "important": true,
+      "id": 5
+    },
+    {
+      "content": "hello",
+      "important": true,
+      "id": 6
     }
   ]
 }
