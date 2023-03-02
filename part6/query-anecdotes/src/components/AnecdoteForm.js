@@ -8,9 +8,12 @@ const AnecdoteForm = () => {
 
   const addAnecdoteMutation = useMutation(addAnecdote, {
     onSuccess: (newAnecdote) => {
-      SetNotification(`Anecdote '${newAnecdote.content}' was added`, dispatch)
       const anecdotes = queryClient.getQueryData('anecdotes')
       queryClient.setQueryData('anecdotes', anecdotes.concat(newAnecdote))
+      SetNotification(`Anecdote '${newAnecdote.content}' was added`, dispatch)
+    },
+    onError: (error) => {
+      SetNotification(error.response.data.error, dispatch)
     }
   })
 

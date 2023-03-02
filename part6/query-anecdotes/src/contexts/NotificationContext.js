@@ -9,8 +9,6 @@ const notificationReducer = (state, action) => {
 }
 
 export const SetNotification = (title, dispatch) => {
-  console.log(title)
-  console.log(dispatch)
   dispatch({ type: 'set', payload: title })
   setTimeout(() => dispatch({ type: 'reset' }), 5000)
 }
