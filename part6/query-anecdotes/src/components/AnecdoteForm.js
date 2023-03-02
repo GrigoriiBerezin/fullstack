@@ -1,13 +1,16 @@
 import {useMutation, useQueryClient} from "react-query";
 import {addAnecdote} from "../requests";
+import {SetNotification, useNotificationDispatch} from "../contexts/NotificationContext";
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
+  const dispatch = useNotificationDispatch()
 
   const addAnecdoteMutation = useMutation(addAnecdote, {
-    onSuccess: (newNote) => {
+    onSuccess: (newAnecdote) => {
+      SetNotification(`Anecdote '${newAnecdote.content}' was added`, dispatch)
       const anecdotes = queryClient.getQueryData('anecdotes')
-      queryClient.setQueryData('anecdotes', anecdotes.concat(newNote))
+      queryClient.setQueryData('anecdotes', anecdotes.concat(newAnecdote))
     }
   })
 
