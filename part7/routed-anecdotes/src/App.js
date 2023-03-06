@@ -73,9 +73,9 @@ const CreateNew = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content: content.value,
-      author: author.value,
-      info: info.value,
+      content: content.inputProps.value,
+      author: author.inputProps.value,
+      info: info.inputProps.value,
       votes: 0
     })
     navigate("/")
@@ -90,7 +90,9 @@ const CreateNew = (props) => {
     <div>
       <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit} onReset={handleReset}>
-        {fields.map(f => <div>{f.name}<input {...f}/></div>)}
+        {fields.map(f => <div key={f.inputProps.name}>
+          {f.inputProps.name}<input {...f.inputProps}/>
+        </div>)}
         <button type='submit'>create</button>
         <button type='reset'>reset</button>
       </form>
@@ -151,8 +153,8 @@ const App = () => {
       <Routes>
         <Route path={"anecdotes/:id"} element={<Anecdote anecdote={anecdote}/>}/>
         <Route path={"/"} element={<AnecdoteList anecdotes={anecdotes}/>}/>
-        <Route path={"/create"} element={<CreateNew addNew={addNew} />}/>
-        <Route path={"/about"} element={<About />}/>
+        <Route path={"/create"} element={<CreateNew addNew={addNew}/>}/>
+        <Route path={"/about"} element={<About/>}/>
       </Routes>
       <Footer/>
     </div>
