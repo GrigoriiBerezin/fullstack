@@ -81,12 +81,18 @@ const CreateNew = (props) => {
     navigate("/")
   }
 
+  const handleReset = (e) => {
+    e.preventDefault()
+    fields.forEach(f => f.reset())
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} onReset={handleReset}>
         {fields.map(f => <div>{f.name}<input {...f}/></div>)}
-        <button>create</button>
+        <button type='submit'>create</button>
+        <button type='reset'>reset</button>
       </form>
     </div>
   )
